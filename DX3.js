@@ -27,11 +27,17 @@ function dx(triggermsg, name) {
         var rply = 'Critical Value must be greater than 2';
         return rply;
     }
+    
+    var rollStrs = [];
 
     for (var round = 1; round > 0; round--) {
         [match, round, rollStr, finallynum] = dxroll(match, round, returnStr, finallynum);
         // push to arrays
         rollNumArray.push(finallynum.toString());
+        rollStr = rollStr.sort(function(a, b) {
+            return b - a;
+        })
+        log(rollStr);
         rollStrArray.push(rollStr);
         signArray.push("+");
     }
@@ -68,14 +74,14 @@ function dx(triggermsg, name) {
     var tdStyle3 = " style='text-align:left; padding: 5px; line-height: 1.4em; border-bottom: 1px solid #ddd; background-color: #ffffff; border-collapse:collapse;' "
     var tableStr = "<div style='overflow-x:auto;'><table style='border:1px solid #ddd; border-collapse:collapse; table-layout:auto;'><tbody>"
     // table title; as caption tag is not supportd, use colspan
-    tableStr += "<tr><th style='padding: 5px; line-height: 1.4em; border:1px solid #aaa; text-align:center; background-color: #292929; color: #f2f2f2' colspan=3>" + name + '|' + triggermsg + "</th></tr>"
+    tableStr += "<tr><th style='padding: 5px; line-height: 1.4em; border:1px solid #aaa; text-align:center; background-color: #292929; color: #f2f2f2' colspan=3>" + name + ' | ' + triggermsg + "</th></tr>"
     // add row for each roll result
     var rowNum = rollStrArray.length;
     for (var i = 0; i < rowNum; i++) {
         tableStr += "<tr>";
         tableStr += "<td" + tdStyle1 + ">" + signArray[i] + "</td>";
         tableStr += "<td" + tdStyle2 + "><b>" + rollNumArray[i] + "</b></td>";
-        tableStr += "<td" + tdStyle3 + ">" + rollStrArray[i] + "</td>";
+        tableStr += "<td" + tdStyle3 + ">" + '[' + rollStrArray[i] + ']' + "</td>";
         tableStr += "</tr>";
     }
 
@@ -115,6 +121,7 @@ function dxroll(match, round, returnStr, finallynum) {
     match[1] = 0;
     var varcou = "";
     var varsu = "";
+    var rollStr = new Array();
     for (var i = 0; i < rollnum; i++) {
         varcou = Math.floor(Math.random() * 10) + 1;
         if (varcou > result) {
@@ -124,13 +131,10 @@ function dxroll(match, round, returnStr, finallynum) {
             result = 10;
             match[1]++;
         }
+    rollStr.push(varcou);
         varsu += varcou + ', ';
     }
     returnStr += result + '[' + varsu + ']';
-
-    var rollStr = '[' + varsu + ']';
-    // remove any dangling commas
-    rollStr = rollStr.replace(/[,][ ]+\]/ig, ']');
 
     finallynum += Number(result);
     if (match[1] >= 1) {
